@@ -1,4 +1,4 @@
-# TETR.IO Config Displayer
+# Config displayer for TETR.IO
 This is a simple HTML/CSS/JavaScript project made to display a TETR.IO config (notably keybinds and handling settings) directly from a web interface, making it easily shareable.
 
 # Features
