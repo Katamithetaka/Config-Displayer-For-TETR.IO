@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TETR.IO Controls Reader</title>
+    <script src="main.js" defer type="module"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+
+<body>
+    <div id="uploadArea">
+
+        <div id="dropArea" class="">
+            <div class="center">
+                <h1 class="uploadFileText"> Drop File Here </h1>
+            </div>
+        </div>
+        <main class="content">
+
+            <div class="center">
+
+                <canvas id="renderedImage">
+                </canvas>
+            </div>
+
+            <div class="input-group">
+                <input  type="file" accept=".ttc" name="configFile" id="configFile" hidden>
+                <label  class="block btn" for="configFile"> <span class="material-symbols-outlined">
+                    upload_file
+                    </span> Import file </label>
+                <button class="block btn" type="button" id="exportButton"> <span class="material-symbols-outlined">
+                    download
+                    </span> Export to Image</button>
+                <button class="block btn" type="button" id="copyButton"> <span class="material-symbols-outlined">
+                    content_copy
+                    </span> Copy to clipboard </button>
+            </div>
+
+            <div class="input-group">
+                <input type="checkbox" name="enableTargetButtons" id="enableTargetButtons">
+                <label for="enableTargetButtons"> Enable targetting buttons? </label>
+            </div>
+            <div class="input-group">
+
+                <input type="checkbox" name="enableGameControls" id="enableGameControls" checked>
+                <label for="enableGameControls"> Enable in game controls? </label>
+            </div>
+            <div class="input-group">
+
+                <input type="checkbox" name="enableHandlingSettings" id="enableHandlingSettings">
+                <label for="enableHandlingSettings"> Show handling settings? </label>
+            </div>
+            <div class="input-group">
+                <input type="checkbox" name="enableMenuControls" id="enableMenuControls">
+                <label for="enableMenuControls"> Show menu controls? </label>
+            </div>
+
+            <div class="input-group">
+                <input type="checkbox" name="showSecondaryControls" id="showSecondaryControls">
+                <label for="showSecondaryControls"> Show secondary controls? </label>
+            </div>
+
+            <div class="input-group">
+                <input type="checkbox" name="showTertiaryControls" id="showTertiaryControls">
+                <label for="showTertiaryControls"> Show tertiary controls? </label>
+            </div>
+
+            <div class="input-group">
+                <input type="color" name="primaryControlColor" id="primaryControlColor" value="#FFFF00">
+                <label for="primaryControlColor"> Primary controls color </label>
+            </div>
+
+            <div class="input-group">
+                <input type="color" name="secondaryControlColor" id="secondaryControlColor" value="#00FF00">
+                <label for="secondaryControlColor"> Secondary controls color </label>
+            </div>
+
+            <div class="input-group">
+                <input type="color" name="tertiaryControlColor" id="tertiaryControlColor" value="#FF0000">
+                <label for="tertiaryControlColor"> Tertiary controls color </label>
+            </div>
+
+            <div class="input-group">
+                <input type="range" name="primaryControlOpacity" id="primaryControlOpacity" value="20" min="0" max="255"
+                    step="1">
+                <label for="primaryControlOpacity"> Primary controls opacity </label>
+            </div>
+
+            <div class="input-group">
+                <input type="range" name="secondaryControlOpacity" id="secondaryControlOpacity" value="20" min="0"
+                    max="255" step="1">
+                <label for="secondaryControlOpacity"> Secondary controls opacity </label>
+            </div>
+
+            <div class="input-group">
+                <input type="range" name="tertiaryControlOpacity" id="tertiaryControlOpacity" value="20" min="0"
+                    max="255" step="1">
+                <label for="tertiaryControlOpacity"> Tertiary controls opacity </label>
+            </div>
+
+            <div class="input-group">
+                <select id="keyboardLayoutSelect" name="keyboardLayoutSelect"></select>
+                <label for="keyboardLayoutSelect"> Keyboard Layout </label>
+            </div>
+
+
+    </div>
+    </main>
+
+
+</body>
+
+</html>
