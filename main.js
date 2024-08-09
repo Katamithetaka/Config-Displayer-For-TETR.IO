@@ -405,15 +405,30 @@ async function rerender() {
 
         const layout = await readLayout();
         const data = await parseData();
-
  
-        if(!data || !layout) return;
+        if(!layout) {
+            alert("Couldn't find Keyboard Layout!");
+            return;
+        }
+
+        if(!data) {
+            renderDefaultKeyboard();
+            return;
+        }
         
         const {keys, keyData} = layout;
 
+        if(!keys || !keyData) {
+            alert("Keyboard layout was invalid!");
+            return;
+        }
+    
         const controls = getControls(data);
-
-        if(!keys || !keyData || !controls) return;
+            
+        if(!controls) {
+            alert("Couldn't read TETR.IO controls!");
+            return;
+        }
         
         const canvasData = resizeCanvas(data, keyData);
 
