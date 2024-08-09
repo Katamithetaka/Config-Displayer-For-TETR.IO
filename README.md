@@ -1,6 +1,12 @@
 # Config displayer for TETR.IO
 This is a simple HTML/CSS/JavaScript project made to display a TETR.IO config (notably keybinds and handling settings) directly from a web interface, making it easily shareable.
 
+# How to use
+
+Clone the repository and start the HTML file
+That's literally it.
+Or you could view the website online [here](https://katamithetaka.github.io/Config-Displayer-For-TETR.IO)
+
 # Features
 
 - Adding keyboard layouts (See Contributing)
