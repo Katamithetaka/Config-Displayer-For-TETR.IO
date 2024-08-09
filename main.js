@@ -265,7 +265,7 @@ async function readLayout() {
     return {keyData, keys};
 }
 
-function resizeCanvas(data) {
+function resizeCanvas(data, keyData) {
 
     let count = 0, handlingSize = 0;
     const fontsize = 14;
@@ -336,9 +336,10 @@ function renderKeyboard({ctx}, keys, keyData, controls) {
 async function renderDefaultKeyboard() {
 
     try {
-        const canvasData = resizeCanvas();
         const layout = await readLayout();
         const {keys, keyData} = layout;
+        const canvasData = resizeCanvas(null, keyData);
+        
         renderKeyboard(canvasData, keys, keyData, guidelineDefaultControls);
     }
     catch(e) {
@@ -404,16 +405,19 @@ async function rerender() {
 
         const layout = await readLayout();
         const data = parseData();
-        const canvasData = resizeCanvas();
 
  
-        if(!data || !canvasData || !layout) return;
+        if(!data || !layout) return;
         
         const {keys, keyData} = layout;
-        
+
         const controls = getControls(data);
 
         if(!keys || !keyData || !controls) return;
+        
+        const canvasData = resizeCanvas(data, keyData);
+
+        if(!canvasData) return;
         
         renderKeyboard(canvasData, keys, keyData, controls);
         renderHandling(canvasData, keyData, data);
