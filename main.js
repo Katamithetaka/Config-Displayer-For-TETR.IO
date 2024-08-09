@@ -333,7 +333,7 @@ function renderKeyboard({ctx}, keys, keyData, controls) {
     }
 }
 
-function renderDefaultKeyboard() {
+async function renderDefaultKeyboard() {
 
     try {
         const canvasData = resizeCanvas();
