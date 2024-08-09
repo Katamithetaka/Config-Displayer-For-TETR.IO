@@ -49,6 +49,7 @@ export class Key {
      */
     highlight(ctx, text, background, color, xoffset, yoffset) {
 
+
         ctx.fillStyle = background
         ctx.beginPath()
         ctx.roundRect(xoffset + this.x, yoffset + this.y, this.width, this.height, 5);

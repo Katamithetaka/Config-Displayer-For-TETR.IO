@@ -224,7 +224,6 @@ async function rerender() {
     }
 
     const shownKeysSet = new Set(shownKeys.flat());
-    console.log(makeColor(primaryControlColorInput, primaryControlOpacityInput))
     const indexColor = {
         0: makeColor(primaryControlColorInput, primaryControlOpacityInput),
         1: makeColor(secondaryControlColorInput, secondaryControlOpacityInput),
@@ -256,13 +255,12 @@ async function rerender() {
 
         const keyName = KEYNames[control];
         for(const i of Object.keys(controls[control]).reverse()) {
-            console.log(i)
             if(i == 1 && !showSecondaryControlsInput.checked) continue;
             if(i >= 2 && !showTertiaryControlsInput.checked) continue;
 
             const button = controls[control][i];
             const index = keyData.mapping[button.toLowerCase()]
-            if(!index) continue;
+            if(index === undefined || index === null) continue;
 
             const key = keys[index];
 
@@ -313,7 +311,7 @@ function checkAllNotNull(a) {
         }
     }
 
-    console.log("All good!")
+    console.info("All good!")
 }
 
 function setOnChangeEvents(a) {
