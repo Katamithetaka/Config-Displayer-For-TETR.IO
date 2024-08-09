@@ -200,8 +200,49 @@ async function rerender() {
 
     const keyData = layout;
     const keys = keyData.keys.map(c => new Key(c));
-    const data = JSON.parse(await file.text());
+    let data;
+    try {
+        data = JSON.parse(await file.text());
+    }
+    catch(e) {
+        alert("Invalid file! This clearly isn't a TETR.IO configuration file!")
+        return;
+    }
 
+
+    if(typeof data !== "object" || 
+        (typeof data === "object" && !data)
+        ||
+        (typeof data === "object" && !!data && 
+            !(
+                "handling" in data 
+            &&  "controls" in data 
+            &&  typeof data["handling"] === "object"
+            &&  typeof data["controls"] === "object"
+            &&  !!data["handling"]
+            &&  !!data["controls"]
+            &&  "style" in data["controls"]
+            &&  "custom" in data["controls"]
+            &&  typeof data["controls"]["custom"] === "object"
+            &&  !!data["controls"]["custom"]
+            &&  typeof data["controls"]["style"] === "string"
+            &&  "arr" in data["handling"]
+            &&  "das" in data["handling"]
+            &&  "dcd" in data["handling"]
+            &&  "sdf" in data["handling"]
+            &&  typeof data["handling"]["arr"] === "number"
+            &&  typeof data["handling"]["das"] === "number"
+            &&  typeof data["handling"]["dcd"] === "number"
+            &&  typeof data["handling"]["sdf"] === "number"
+            && Object.keys(data["controls"]["custom"]).every(
+                c => typeof data["controls"]["custom"][c] === "object" 
+                     && !!data["controls"]["custom"][c] 
+                     && Array.isArray(data["controls"]["custom"][c])
+            )
+        ))) {
+            alert("Invalid file! This clearly isn't a TETR.IO configuration file!")
+            return;
+        }
 
     const fontsize = 14;
     let count = Object.values(data["handling"]).filter(c => c !== false).length;
