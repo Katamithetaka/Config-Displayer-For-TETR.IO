@@ -342,7 +342,7 @@ async function renderDefaultKeyboard() {
         renderKeyboard(canvasData, keys, keyData, guidelineDefaultControls);
     }
     catch(e) {
-        fileError("An error occured while trying to render they keyboard!");
+        alert("An error occured while trying to render they keyboard!");
         console.error(e);
     }
 
