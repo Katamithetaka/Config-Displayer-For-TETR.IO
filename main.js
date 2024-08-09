@@ -196,7 +196,7 @@ function fileError(message, ctx) {
     renderDefaultKeyboard();
 }
 
-function parseData() {
+async function parseData() {
     /**
      * @type {File}
      */
