@@ -195,6 +195,11 @@ async function rerender() {
 
     if (!file) return;
 
+    if(file.size > 1_000_000_000) {
+        alert("MMmh me too I totally believe your TETR.IO config is above 1GB.");
+        return
+    }
+
     const { layout } = await import(keyboardLayoutSelect.value)
 
 
