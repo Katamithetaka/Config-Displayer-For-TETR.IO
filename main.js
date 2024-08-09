@@ -404,7 +404,7 @@ async function rerender() {
     try {
 
         const layout = await readLayout();
-        const data = parseData();
+        const data = await parseData();
 
  
         if(!data || !layout) return;
