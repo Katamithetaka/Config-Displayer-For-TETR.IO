@@ -187,6 +187,15 @@ function makeColor(colorInput, opacityInput) {
     return colorInput.value + (opacity.length == 2 ? opacity : "0" + opacity )
 }
 
+function fileError(message, ctx) {
+    alert(message);
+    fileInput.input.value = "";
+    fileInput.value = null;
+    canvas.width = 0;
+    canvas.height = 0;
+    
+}
+
 async function rerender() {
     /**
      * @type {File}
@@ -196,7 +205,7 @@ async function rerender() {
     if (!file) return;
 
     if(file.size > 1_000_000_000) {
-        alert("MMmh me too I totally believe your TETR.IO config is above 1GB.");
+        fileError("MMmh me too I totally believe your TETR.IO config is above 1GB.");
         return
     }
 
@@ -210,7 +219,7 @@ async function rerender() {
         data = JSON.parse(await file.text());
     }
     catch(e) {
-        alert("Invalid file! This clearly isn't a TETR.IO configuration file!")
+        fileError("Invalid file! This clearly isn't a TETR.IO configuration file!")
         return;
     }
 
@@ -245,7 +254,7 @@ async function rerender() {
                      && Array.isArray(data["controls"]["custom"][c])
             )
         ))) {
-            alert("Invalid file! This clearly isn't a TETR.IO configuration file!")
+            fileError("Invalid file! This clearly isn't a TETR.IO configuration file!")
             return;
         }
 
