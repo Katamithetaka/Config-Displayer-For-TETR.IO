@@ -193,10 +193,10 @@ function fileError(message, ctx) {
     fileInput.value = null;
     canvas.width = 0;
     canvas.height = 0;
-    
+    renderDefaultKeyboard();
 }
 
-async function rerender() {
+function parseData() {
     /**
      * @type {File}
      */
@@ -206,14 +206,9 @@ async function rerender() {
 
     if(file.size > 1_000_000_000) {
         fileError("MMmh me too I totally believe your TETR.IO config is above 1GB.");
-        return
+        return;
     }
 
-    const { layout } = await import(keyboardLayoutSelect.value)
-
-
-    const keyData = layout;
-    const keys = keyData.keys.map(c => new Key(c));
     let data;
     try {
         data = JSON.parse(await file.text());
@@ -258,12 +253,40 @@ async function rerender() {
             return;
         }
 
+    return data;
+}
+
+async function readLayout() {
+    const { layout } = await import(keyboardLayoutSelect.value)
+
+    const keyData = layout;
+    const keys = keyData.keys.map(c => new Key(c));
+
+    return {keyData, keys};
+}
+
+function resizeCanvas(data) {
+
+    let count = 0, handlingSize = 0;
     const fontsize = 14;
-    let count = Object.values(data["handling"]).filter(c => c !== false).length;
-    const handlingSize = (fontsize + 2) * (count + 1) * (enableHandlingSettingsInput.checked == false ? 0 : 1); 
     
+    if (data) {
+        count = Object.values(data["handling"]).filter(c => c !== false).length;
+        handlingSize = (fontsize + 2) * (count + 1) * (enableHandlingSettingsInput.checked == false ? 0 : 1); 
+    }
+     
     canvas.width = keyData.keyboardWidth * keyData.width + keyData.keyboardMargin * 2;
     canvas.height = handlingSize + keyData.keyboardHeight * keyData.height +  keyData.keyboardMargin * 2;
+
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#eeeeee"
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+    return {count, handlingSize, fontsize, ctx}
+}
+
+function renderKeyboard({ctx}, keys, keyData, controls) {
 
     const shownKeys = [];
     if(enableGameControlsInput.checked) {
@@ -285,24 +308,10 @@ async function rerender() {
         2: makeColor(tertiaryControlColorInput, tertiaryControlOpacityInput)
     }
 
-    const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#eeeeee"
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
     for (const key of keys) {
         key.draw(ctx, keyData.keyboardMargin, keyData.keyboardMargin);
     }
 
-    let controls;
-    if(data["controls"]["style"] === "custom") {
-        controls = data["controls"]["custom"]
-    }
-    else if (data["controls"]["style"] === "wasd") {
-        controls = WASDDefaultControls
-    }
-    else {
-        controls = guidelineDefaultControls
-    }
     for (const control in controls) {
         if(!shownKeysSet.has(control)) {
             continue;
@@ -322,7 +331,39 @@ async function rerender() {
             key.highlight(ctx, keyName, indexColor[i] ?? indexColor[2], "black", keyData.keyboardMargin, keyData.keyboardMargin);
         }
     }
+}
 
+function renderDefaultKeyboard() {
+
+    try {
+        const canvasData = resizeCanvas();
+        const layout = await readLayout();
+        const {keys, keyData} = layout;
+        renderKeyboard(canvasData, keys, keyData, guidelineDefaultControls);
+    }
+    catch(e) {
+        fileError("An error occured while trying to render they keyboard!");
+        console.error(e);
+    }
+
+}
+
+function getControls(data) {
+    let controls;
+    if(data["controls"]["style"] === "custom") {
+        controls = data["controls"]["custom"]
+    }
+    else if (data["controls"]["style"] === "wasd") {
+        controls = WASDDefaultControls
+    }
+    else {
+        controls = guidelineDefaultControls
+    }
+
+    return controls;
+}
+
+function renderHandling({ctx, count, handlingSize, fontsize}, keyData, data) {
     if(handlingSize == 0) return;
 
     /*
@@ -355,6 +396,35 @@ async function rerender() {
     if(data["handling"]["may20g"]) {
         ctx.fillText("Prefer soft drop over movement", keyData.keyboardMargin, canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
     }
+}
+
+async function rerender() {
+    
+    try {
+
+        const layout = await readLayout();
+        const data = parseData();
+        const canvasData = resizeCanvas();
+
+ 
+        if(!data || !canvasData || !layout) return;
+        
+        const {keys, keyData} = layout;
+        
+        const controls = getControls(data);
+
+        if(!keys || !keyData || !controls) return;
+        
+        renderKeyboard(canvasData, keys, keyData, controls);
+        renderHandling(canvasData, keyData, data);
+
+    }
+    catch(e) {
+        fileError("An error occured while trying to render they keyboard!");
+        console.error(e);
+    }
+
+
 
 }
 
@@ -475,3 +545,5 @@ copyButton.addEventListener("click", () => {
         navigator.clipboard.write([item]); 
     });
 })
+
+renderDefaultKeyboard();
