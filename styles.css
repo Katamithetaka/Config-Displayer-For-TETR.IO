@@ -72,8 +72,6 @@ body {
   border-radius: 5px;
 }
 
-
-
 .btn {
   transition: background-color 0.2s, color 0.2s;
   cursor: pointer;
@@ -107,26 +105,6 @@ input[type="range"],
 select {
   width: 150px;
   cursor: pointer;
-}
-
-button {
-  background: none;
-  border: none;
-  padding: 0;
-}
-
-button svg {
-  cursor: pointer;
-}
-
-button svg:hover {
-  /* Styles for hover state */
-  fill: black; /* Example: change fill color */
-}
-
-button svg:active {
-  /* Styles for active state */
-  transform: scale(0.9); /* Example: scale down slightly */
 }
 /* The switch - the box around the slider */
 .switch {
