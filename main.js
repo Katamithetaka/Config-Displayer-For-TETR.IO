@@ -65,7 +65,16 @@ const keyboardLayoutSelect = document.getElementById("keyboardLayoutSelect")
  * @type {HTMLCanvasElement}
  */
 const canvas = document.getElementById("renderedImage");
+/**
+ * @type {HTMLLabelElement}
+ */
+const uploadConfigLabel = document.getElementById("uploadConfig");
 
+const darkModeSlider = document.getElementById("darkSlider");
+
+const body = document.body;
+
+const themes = [{ class: "theme-light", name: "Light Theme" }, { class: "theme-dark", name: "Dark Theme" }]
 
 const KEYNames = {
     "moveLeft": "L",
@@ -113,7 +122,7 @@ const WASDDefaultControls = {
     menuLeft: ["ARROWLEFT", "KEYA"],
     menuRight: ["ARROWRIGHT", "KEYD"],
     menuBack: ["ESCAPE", "BACKSPACE"],
-    menuConfirm: ["ENTER","SPACE"],
+    menuConfirm: ["ENTER", "SPACE"],
     openSocial: ["TAB"],
 }
 
@@ -138,7 +147,7 @@ const guidelineDefaultControls = {
     menuLeft: ["ARROWLEFT", "KEYA"],
     menuRight: ["ARROWRIGHT", "KEYD"],
     menuBack: ["ESCAPE", "BACKSPACE"],
-    menuConfirm: ["ENTER","SPACE"],
+    menuConfirm: ["ENTER", "SPACE"],
     openSocial: ["TAB"],
 }
 
@@ -179,12 +188,24 @@ const keyboardLayouts = [{
     name: "US QWERTY"
 }]
 
+function* nextThemeGenerator() {
+    let index = 0;
+    while (true) {
+        yield themes[index]
+        index = (index + 1) % themes.length
+    }
+}
+
+const nextTheme = nextThemeGenerator();
+let currentTheme = nextTheme.next().value;
+
+
 
 
 
 function makeColor(colorInput, opacityInput) {
-    const opacity = parseInt(opacityInput.value).toString(16) 
-    return colorInput.value + (opacity.length == 2 ? opacity : "0" + opacity )
+    const opacity = parseInt(opacityInput.value).toString(16)
+    return colorInput.value + (opacity.length == 2 ? opacity : "0" + opacity)
 }
 
 function fileError(message, ctx) {
@@ -204,7 +225,7 @@ async function parseData() {
 
     if (!file) return;
 
-    if(file.size > 1_000_000_000) {
+    if (file.size > 1_000_000_000) {
         fileError("MMmh me too I totally believe your TETR.IO config is above 1GB.");
         return;
     }
@@ -213,45 +234,45 @@ async function parseData() {
     try {
         data = JSON.parse(await file.text());
     }
-    catch(e) {
+    catch (e) {
         fileError("Invalid file! This clearly isn't a TETR.IO configuration file!")
         return;
     }
 
 
-    if(typeof data !== "object" || 
+    if (typeof data !== "object" ||
         (typeof data === "object" && !data)
         ||
-        (typeof data === "object" && !!data && 
+        (typeof data === "object" && !!data &&
             !(
-                "handling" in data 
-            &&  "controls" in data 
-            &&  typeof data["handling"] === "object"
-            &&  typeof data["controls"] === "object"
-            &&  !!data["handling"]
-            &&  !!data["controls"]
-            &&  "style" in data["controls"]
-            &&  "custom" in data["controls"]
-            &&  typeof data["controls"]["custom"] === "object"
-            &&  !!data["controls"]["custom"]
-            &&  typeof data["controls"]["style"] === "string"
-            &&  "arr" in data["handling"]
-            &&  "das" in data["handling"]
-            &&  "dcd" in data["handling"]
-            &&  "sdf" in data["handling"]
-            &&  typeof data["handling"]["arr"] === "number"
-            &&  typeof data["handling"]["das"] === "number"
-            &&  typeof data["handling"]["dcd"] === "number"
-            &&  typeof data["handling"]["sdf"] === "number"
-            && Object.keys(data["controls"]["custom"]).every(
-                c => typeof data["controls"]["custom"][c] === "object" 
-                     && !!data["controls"]["custom"][c] 
-                     && Array.isArray(data["controls"]["custom"][c])
-            )
-        ))) {
-            fileError("Invalid file! This clearly isn't a TETR.IO configuration file!")
-            return;
-        }
+                "handling" in data
+                && "controls" in data
+                && typeof data["handling"] === "object"
+                && typeof data["controls"] === "object"
+                && !!data["handling"]
+                && !!data["controls"]
+                && "style" in data["controls"]
+                && "custom" in data["controls"]
+                && typeof data["controls"]["custom"] === "object"
+                && !!data["controls"]["custom"]
+                && typeof data["controls"]["style"] === "string"
+                && "arr" in data["handling"]
+                && "das" in data["handling"]
+                && "dcd" in data["handling"]
+                && "sdf" in data["handling"]
+                && typeof data["handling"]["arr"] === "number"
+                && typeof data["handling"]["das"] === "number"
+                && typeof data["handling"]["dcd"] === "number"
+                && typeof data["handling"]["sdf"] === "number"
+                && Object.keys(data["controls"]["custom"]).every(
+                    c => typeof data["controls"]["custom"][c] === "object"
+                        && !!data["controls"]["custom"][c]
+                        && Array.isArray(data["controls"]["custom"][c])
+                )
+            ))) {
+        fileError("Invalid file! This clearly isn't a TETR.IO configuration file!")
+        return;
+    }
 
     return data;
 }
@@ -262,42 +283,42 @@ async function readLayout() {
     const keyData = layout;
     const keys = keyData.keys.map(c => new Key(c));
 
-    return {keyData, keys};
+    return { keyData, keys };
 }
 
 function resizeCanvas(data, keyData) {
 
     let count = 0, handlingSize = 0;
     const fontsize = 14;
-    
+
     if (data) {
         count = Object.values(data["handling"]).filter(c => c !== false).length;
-        handlingSize = (fontsize + 2) * (count + 1) * (enableHandlingSettingsInput.checked == false ? 0 : 1); 
+        handlingSize = (fontsize + 2) * (count + 1) * (enableHandlingSettingsInput.checked == false ? 0 : 1);
     }
-     
+
     canvas.width = keyData.keyboardWidth * keyData.width + keyData.keyboardMargin * 2;
-    canvas.height = handlingSize + keyData.keyboardHeight * keyData.height +  keyData.keyboardMargin * 2;
+    canvas.height = handlingSize + keyData.keyboardHeight * keyData.height + keyData.keyboardMargin * 2;
 
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "#eeeeee"
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 
-    return {count, handlingSize, fontsize, ctx}
+    return { count, handlingSize, fontsize, ctx }
 }
 
-function renderKeyboard({ctx}, keys, keyData, controls) {
+function renderKeyboard({ ctx }, keys, keyData, controls) {
 
     const shownKeys = [];
-    if(enableGameControlsInput.checked) {
+    if (enableGameControlsInput.checked) {
         shownKeys.push(gameKeys)
     }
 
-    if(enableMenuControlsInput.checked) {
+    if (enableMenuControlsInput.checked) {
         shownKeys.push(menuButtons)
     }
 
-    if(enableTargetButtonsInput.checked) {
+    if (enableTargetButtonsInput.checked) {
         shownKeys.push(targettingButtons)
     }
 
@@ -313,22 +334,22 @@ function renderKeyboard({ctx}, keys, keyData, controls) {
     }
 
     for (const control in controls) {
-        if(!shownKeysSet.has(control)) {
+        if (!shownKeysSet.has(control)) {
             continue;
         }
 
         const keyName = KEYNames[control];
-        for(const i of Object.keys(controls[control]).reverse()) {
-            if(i == 1 && !showSecondaryControlsInput.checked) continue;
-            if(i >= 2 && !showTertiaryControlsInput.checked) continue;
+        for (const i of Object.keys(controls[control]).reverse()) {
+            if (i == 1 && !showSecondaryControlsInput.checked) continue;
+            if (i >= 2 && !showTertiaryControlsInput.checked) continue;
 
             const button = controls[control][i];
-            if(!button || typeof button !== "string") {
+            if (!button || typeof button !== "string") {
                 console.error("Couldn't find button for value " + control + "( value was: " + button + " )");
                 continue;
             }
             const index = keyData.mapping[button.toLowerCase()]
-            if(index === undefined || index === null) continue;
+            if (index === undefined || index === null) continue;
 
             const key = keys[index];
 
@@ -341,12 +362,12 @@ async function renderDefaultKeyboard() {
 
     try {
         const layout = await readLayout();
-        const {keys, keyData} = layout;
+        const { keys, keyData } = layout;
         const canvasData = resizeCanvas(null, keyData);
-        
+
         renderKeyboard(canvasData, keys, keyData, guidelineDefaultControls);
     }
-    catch(e) {
+    catch (e) {
         alert("An error occured while trying to render they keyboard!");
         console.error(e);
     }
@@ -355,7 +376,7 @@ async function renderDefaultKeyboard() {
 
 function getControls(data) {
     let controls;
-    if(data["controls"]["style"] === "custom") {
+    if (data["controls"]["style"] === "custom") {
         controls = data["controls"]["custom"]
     }
     else if (data["controls"]["style"] === "wasd") {
@@ -368,8 +389,8 @@ function getControls(data) {
     return controls;
 }
 
-function renderHandling({ctx, count, handlingSize, fontsize}, keyData, data) {
-    if(handlingSize == 0) return;
+function renderHandling({ ctx, count, handlingSize, fontsize }, keyData, data) {
+    if (handlingSize == 0) return;
 
     /*
         "handling": {
@@ -384,65 +405,65 @@ function renderHandling({ctx, count, handlingSize, fontsize}, keyData, data) {
     }*/
     ctx.font = "bold " + fontsize + "px sans-serif"
     let offset = count;
-    
+
     ctx.fillText("ARR: " + data["handling"]["arr"] + "F", keyData.keyboardMargin, canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
     ctx.fillText("DAS: " + data["handling"]["das"] + "F", keyData.keyboardMargin, canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
     ctx.fillText("DCD: " + data["handling"]["dcd"] + "F", keyData.keyboardMargin, canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
     ctx.fillText("SDF: " + data["handling"]["sdf"] + "X", keyData.keyboardMargin, canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
 
-    if(data["handling"]["safelock"]) {
+    if (data["handling"]["safelock"]) {
         ctx.fillText("Prevent accidental missdrop", keyData.keyboardMargin, canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
     }
 
-    if(data["handling"]["cancel"]) {
+    if (data["handling"]["cancel"]) {
         ctx.fillText("Cancel DAS when changing directions", keyData.keyboardMargin, canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
     }
 
-    if(data["handling"]["may20g"]) {
+    if (data["handling"]["may20g"]) {
         ctx.fillText("Prefer soft drop over movement", keyData.keyboardMargin, canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
     }
 }
 
 async function rerender() {
-    
+
     try {
 
         const layout = await readLayout();
         const data = await parseData();
- 
-        if(!layout) {
+
+        if (!layout) {
             alert("Couldn't find Keyboard Layout!");
             return;
         }
 
-        if(!data) {
+        if (!data) {
             renderDefaultKeyboard();
             return;
         }
-        
-        const {keys, keyData} = layout;
 
-        if(!keys || !keyData) {
+        const { keys, keyData } = layout;
+
+        if (!keys || !keyData) {
             alert("Keyboard layout was invalid!");
             return;
         }
-    
+
         const controls = getControls(data);
-            
-        if(!controls) {
+
+        if (!controls) {
             alert("Couldn't read TETR.IO controls!");
             return;
         }
-        
+
         const canvasData = resizeCanvas(data, keyData);
 
-        if(!canvasData) return;
-        
+        if (!canvasData) return;
+
         renderKeyboard(canvasData, keys, keyData, controls);
         renderHandling(canvasData, keyData, data);
 
     }
-    catch(e) {
+    catch (e) {
         fileError("An error occured while trying to render they keyboard!");
         console.error(e);
     }
@@ -489,6 +510,9 @@ checkAllNotNull({
     exportButton,
     copyButton,
     canvas,
+    body,
+    darkModeSlider,
+    uploadConfigLabel
 })
 
 setOnChangeEvents({
@@ -507,11 +531,11 @@ setOnChangeEvents({
     tertiaryControlOpacityInput,
 })
 
-for(const keyboardLayout of keyboardLayouts) {
+for (const keyboardLayout of keyboardLayouts) {
     const option = document.createElement("option")
     option.innerText = keyboardLayout.name
     option.value = keyboardLayout.file
-    keyboardLayoutSelect.appendChild(option)   
+    keyboardLayoutSelect.appendChild(option)
 }
 
 uploadArea.addEventListener("dragover", e => {
@@ -568,61 +592,27 @@ copyButton.addEventListener("click", () => {
     //     navigator.clipboard.write([item]); 
     // });
 
-    const img = document.createElement('img'); 
+    const img = document.createElement('img');
     img.src = canvas.toDataURL();
 
     const div = document.createElement('div');
     div.contentEditable = true;
-    div.appendChild( img );
-    document.body.appendChild( div );
+    div.appendChild(img);
+    document.body.appendChild(div);
     div.focus();
-    window.getSelection().selectAllChildren( div );
+    window.getSelection().selectAllChildren(div);
     document.execCommand('Copy');  // technically deprecated
-    document.body.removeChild( div );
+    document.body.removeChild(div);
 })
 
 renderDefaultKeyboard();
 
+darkModeSlider.addEventListener("change", () => {
 
-let isLightBackground = true;
-const body = document.body;
+    // Update base styles
+    body.classList.toggle(currentTheme.class);
+    const next = nextTheme.next().value;
+    body.classList.toggle(next.class);
+    currentTheme = next;
 
-const svgButton = document.getElementById('svgButton'); // Assuming ID for the button
-
-function toggleHoverColors() {
-  const hoverColor = isLightBackground ? '#d3d3d3' : '#8a8495'; // Set desired hover colors
-  const elements = [copyButton, exportButton, uploadConfig]; // Array of elements to target
-
-  // Toggle hover behavior for each element
-  elements.forEach(element => {
-    element.addEventListener('mouseover', () => element.style.backgroundColor = hoverColor);
-    element.addEventListener('mouseout', () => element.style.backgroundColor = ''); // Reset to default color
-  });
-}
-
-darkSlider.addEventListener("change", () => {
-  isLightBackground = !isLightBackground;
-
-
-  // Update base styles
-  body.style.backgroundColor = isLightBackground ? "white" : "#181a1b";
-  body.style.color = isLightBackground ? "black" : "white";
-
-  // Update copyButton, exportButton styles
-  copyButton.style.color = isLightBackground ? "black" : "white";
-  copyButton.style.border = isLightBackground ? "1px solid black" : "1px solid white";
-
-  exportButton.style.color = isLightBackground ? "black" : "white";
-  exportButton.style.border = isLightBackground ? "1px solid black" : "1px solid white";
-
-  uploadConfig.style.color = isLightBackground ? "black" : "white";  
-  uploadConfig.style.border = isLightBackground ? "1px solid black" : "1px solid white";
-
-
-
-  // Toggle hover colors based on current background state
-  toggleHoverColors();
 });
-
-// Call toggleHoverColors() initially to set hover behavior based on default state
-toggleHoverColors();

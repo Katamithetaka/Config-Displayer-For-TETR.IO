@@ -10,14 +10,9 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 
-<body>
+<body class="theme-light">
  
-    <div id="darkSlider">
-        <label class="switch">
-            <input type="checkbox" id="darkModeToggle">
-            <span class="slider"></span>
-        </label>
-    </div>
+
           
     </div>
 
@@ -39,7 +34,7 @@
 
             <div class="input-group">
                 <input  type="file" accept=".ttc" name="configFile" id="configFile" hidden>
-                <label  id= uploadConfig class="block btn" for="configFile"> <span class="material-symbols-outlined">
+                <label  id="uploadConfig" class="block btn" for="configFile"> <span class="material-symbols-outlined">
                     upload_file
                     </span> Import file </label>
                 <button class="block btn" type="button" id="exportButton"> <span class="material-symbols-outlined">
@@ -51,31 +46,71 @@
             </div>
 
             <div class="input-group">
-                <input type="checkbox" name="enableTargetButtons" id="enableTargetButtons">
+                <div id="darkSlider">
+                    <label class="switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <label for="darkModeToggle"> Enable Dark Mode? </label> 
+            </div>
+
+            <div class="input-group">
+
+                <div >
+                    <label class="switch">
+                        <input type="checkbox" id="enableTargetButtons">
+                        <span class="slider"></span>
+                    </label>
+                </div>
                 <label for="enableTargetButtons"> Enable targetting buttons? </label>
             </div>
             <div class="input-group">
 
-                <input type="checkbox" name="enableGameControls" id="enableGameControls" checked>
+                <div >
+                    <label class="switch">
+                        <input type="checkbox" id="enableGameControls" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
                 <label for="enableGameControls"> Enable in game controls? </label>
             </div>
             <div class="input-group">
-
-                <input type="checkbox" name="enableHandlingSettings" id="enableHandlingSettings">
+                <div >
+                    <label class="switch">
+                        <input type="checkbox" id="enableHandlingSettings">
+                        <span class="slider"></span>
+                    </label>
+                </div>
                 <label for="enableHandlingSettings"> Show handling settings? </label>
             </div>
             <div class="input-group">
-                <input type="checkbox" name="enableMenuControls" id="enableMenuControls">
+                <div >
+                    <label class="switch">
+                        <input type="checkbox" id="enableMenuControls">
+                        <span class="slider"></span>
+                    </label>
+                </div>
                 <label for="enableMenuControls"> Show menu controls? </label>
             </div>
 
             <div class="input-group">
-                <input type="checkbox" name="showSecondaryControls" id="showSecondaryControls">
+                <div >
+                    <label class="switch">
+                        <input type="checkbox" id="showSecondaryControls">
+                        <span class="slider"></span>
+                    </label>
+                </div>
                 <label for="showSecondaryControls"> Show secondary controls? </label>
             </div>
 
             <div class="input-group">
-                <input type="checkbox" name="showTertiaryControls" id="showTertiaryControls">
+                <div >
+                    <label class="switch">
+                        <input type="checkbox" id="showTertiaryControls">
+                        <span class="slider"></span>
+                    </label>
+                </div>
                 <label for="showTertiaryControls"> Show tertiary controls? </label>
             </div>
 

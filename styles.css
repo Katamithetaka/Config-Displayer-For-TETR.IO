@@ -5,10 +5,27 @@
   box-sizing: border-box;
 }
 
+body.theme-dark {
+  --background-color: #181a1b;
+  --text-color: white;
+  --btn-border: 1px solid white;
+  --hover-color: #8a8495;
+}
+
+body.theme-light {
+  --background-color: white;
+  --text-color: black;
+  --btn-border: 1px solid black;
+  --hover-color: #d3d3d3;
+}
+
 body {
   display: block;
   width: 100vw;
   width: 100dvw;
+  transition: background-color  0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background-color: var(--background-color);
+  color: var(--text-color)
 }
 
 .input-group {
@@ -72,11 +89,15 @@ body {
   border-radius: 5px;
 }
 
-
-
 .btn {
   transition: background-color 0.2s, color 0.2s;
   cursor: pointer;
+  color: var(--text-color);
+  border: var(--btn-border);
+}
+
+.btn:hover {
+  background-color: var(--hover-color);
 }
 
 .btn:active {
@@ -109,28 +130,9 @@ select {
   cursor: pointer;
 }
 
-button {
-  background: none;
-  border: none;
-  padding: 0;
-}
-
-button svg {
-  cursor: pointer;
-}
-
-button svg:hover {
-  /* Styles for hover state */
-  fill: black; /* Example: change fill color */
-}
-
-button svg:active {
-  /* Styles for active state */
-  transform: scale(0.9); /* Example: scale down slightly */
-}
 /* The switch - the box around the slider */
 .switch {
-  font-size: 17px;
+  font-size: 12px;
   position: relative;
   display: inline-block;
   width: 3.5em;
