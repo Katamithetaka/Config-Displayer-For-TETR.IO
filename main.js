@@ -587,8 +587,6 @@ renderDefaultKeyboard();
 let isLightBackground = true;
 const body = document.body;
 
-const svgButton = document.getElementById('svgButton'); // Assuming ID for the button
-
 function toggleHoverColors() {
   const hoverColor = isLightBackground ? '#d3d3d3' : '#8a8495'; // Set desired hover colors
   const elements = [copyButton, exportButton, uploadConfig]; // Array of elements to target
