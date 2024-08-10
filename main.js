@@ -70,11 +70,15 @@ const canvas = document.getElementById("renderedImage");
  */
 const uploadConfigLabel = document.getElementById("uploadConfig");
 
-const darkModeSlider = document.getElementById("darkSlider");
+const themeButton = document.getElementById("themeButton");
+
+const themeButtonIcon = document.getElementById("themeButtonIcon");
+const themeButtonText = document.getElementById("themeButtonText");
+
 
 const body = document.body;
 
-const themes = [{ class: "theme-light", name: "Light Theme" }, { class: "theme-dark", name: "Dark Theme" }]
+const themes = [{ class: "theme-light", name: "Light Theme", icon: "light_mode" }, { class: "theme-dark", name: "Dark Theme", icon: "dark_mode" }]
 
 const KEYNames = {
     "moveLeft": "L",
@@ -188,17 +192,17 @@ const keyboardLayouts = [{
     name: "US QWERTY"
 }]
 
-function* nextThemeGenerator() {
+
+
+const nextThemeGenerator = (function* nextThemeGeneratorFunction() {
     let index = 0;
     while (true) {
         yield themes[index]
         index = (index + 1) % themes.length
     }
-}
-
-const nextTheme = nextThemeGenerator();
-let currentTheme = nextTheme.next().value;
-
+})()
+let currentTheme = nextThemeGenerator.next().value;
+let nextTheme = nextThemeGenerator.next().value 
 
 
 
@@ -511,7 +515,7 @@ checkAllNotNull({
     copyButton,
     canvas,
     body,
-    darkModeSlider,
+    themeButton,
     uploadConfigLabel
 })
 
@@ -607,12 +611,25 @@ copyButton.addEventListener("click", () => {
 
 renderDefaultKeyboard();
 
-darkModeSlider.addEventListener("change", () => {
+
+function setTheme() {
+    body.classList.toggle(currentTheme.class);
+    themeButtonIcon.innerText = currentTheme.icon;
+    themeButtonText.innerText = currentTheme.name;
+}
+
+themeButton.addEventListener("click", () => {
 
     // Update base styles
     body.classList.toggle(currentTheme.class);
-    const next = nextTheme.next().value;
-    body.classList.toggle(next.class);
-    currentTheme = next;
+    
+    currentTheme = nextTheme;
+    
+    setTheme();
+
+    nextTheme = nextThemeGenerator.next().value;
+    
 
 });
+
+setTheme();

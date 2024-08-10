@@ -94,6 +94,8 @@ body {
   cursor: pointer;
   color: var(--text-color);
   border: var(--btn-border);
+  display: flex;
+  gap: 4px;
 }
 
 .btn:hover {
