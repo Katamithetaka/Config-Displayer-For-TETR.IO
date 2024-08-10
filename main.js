@@ -563,10 +563,22 @@ exportButton.addEventListener("click", () => {
 })
 
 copyButton.addEventListener("click", () => {
-    canvas.toBlob(function(blob) { 
-        const item = new ClipboardItem({ "image/png": blob });
-        navigator.clipboard.write([item]); 
-    });
+    // canvas.toBlob(function(blob) { 
+    //     const item = new ClipboardItem({ "image/png": blob });
+    //     navigator.clipboard.write([item]); 
+    // });
+
+    const img = document.createElement('img'); 
+    img.src = canvas.toDataURL();
+
+    const div = document.createElement('div');
+    div.contentEditable = true;
+    div.appendChild( img );
+    document.body.appendChild( div );
+    div.focus();
+    window.getSelection().selectAllChildren( div );
+    document.execCommand('Copy');  // technically deprecated
+    document.body.removeChild( div );
 })
 
 renderDefaultKeyboard();
