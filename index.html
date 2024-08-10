@@ -11,6 +11,17 @@
 </head>
 
 <body>
+ 
+    <div id="darkSlider">
+        <label class="switch">
+            <input type="checkbox" id="darkModeToggle">
+            <span class="slider"></span>
+        </label>
+    </div>
+          
+    </div>
+
+
     <div id="uploadArea">
 
         <div id="dropArea" class="">
@@ -28,7 +39,7 @@
 
             <div class="input-group">
                 <input  type="file" accept=".ttc" name="configFile" id="configFile" hidden>
-                <label  class="block btn" for="configFile"> <span class="material-symbols-outlined">
+                <label  id= uploadConfig class="block btn" for="configFile"> <span class="material-symbols-outlined">
                     upload_file
                     </span> Import file </label>
                 <button class="block btn" type="button" id="exportButton"> <span class="material-symbols-outlined">
@@ -108,6 +119,8 @@
 
 
     </div>
+
+ 
     </main>
 
 

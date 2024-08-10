@@ -582,3 +582,47 @@ copyButton.addEventListener("click", () => {
 })
 
 renderDefaultKeyboard();
+
+
+let isLightBackground = true;
+const body = document.body;
+
+const svgButton = document.getElementById('svgButton'); // Assuming ID for the button
+
+function toggleHoverColors() {
+  const hoverColor = isLightBackground ? '#d3d3d3' : '#8a8495'; // Set desired hover colors
+  const elements = [copyButton, exportButton, uploadConfig]; // Array of elements to target
+
+  // Toggle hover behavior for each element
+  elements.forEach(element => {
+    element.addEventListener('mouseover', () => element.style.backgroundColor = hoverColor);
+    element.addEventListener('mouseout', () => element.style.backgroundColor = ''); // Reset to default color
+  });
+}
+
+darkSlider.addEventListener("change", () => {
+  isLightBackground = !isLightBackground;
+
+
+  // Update base styles
+  body.style.backgroundColor = isLightBackground ? "white" : "#181a1b";
+  body.style.color = isLightBackground ? "black" : "white";
+
+  // Update copyButton, exportButton styles
+  copyButton.style.color = isLightBackground ? "black" : "white";
+  copyButton.style.border = isLightBackground ? "1px solid black" : "1px solid white";
+
+  exportButton.style.color = isLightBackground ? "black" : "white";
+  exportButton.style.border = isLightBackground ? "1px solid black" : "1px solid white";
+
+  uploadConfig.style.color = isLightBackground ? "black" : "white";  
+  uploadConfig.style.border = isLightBackground ? "1px solid black" : "1px solid white";
+
+
+
+  // Toggle hover colors based on current background state
+  toggleHoverColors();
+});
+
+// Call toggleHoverColors() initially to set hover behavior based on default state
+toggleHoverColors();
