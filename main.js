@@ -323,6 +323,10 @@ function renderKeyboard({ctx}, keys, keyData, controls) {
             if(i >= 2 && !showTertiaryControlsInput.checked) continue;
 
             const button = controls[control][i];
+            if(!button || typeof button !== "string") {
+                console.error("Couldn't find button for value " + control + "( value was: " + button + " )";
+                continue;
+            }
             const index = keyData.mapping[button.toLowerCase()]
             if(index === undefined || index === null) continue;
 
