@@ -324,7 +324,7 @@ function renderKeyboard({ctx}, keys, keyData, controls) {
 
             const button = controls[control][i];
             if(!button || typeof button !== "string") {
-                console.error("Couldn't find button for value " + control + "( value was: " + button + " )";
+                console.error("Couldn't find button for value " + control + "( value was: " + button + " )");
                 continue;
             }
             const index = keyData.mapping[button.toLowerCase()]
