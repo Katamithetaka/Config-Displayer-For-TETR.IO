@@ -80,7 +80,32 @@ const themeButtonText = document.getElementById("themeButtonText");
 
 const body = document.body;
 
-const themes = [{ class: "theme-light", name: "Light Theme", icon: "light_mode" }, { class: "theme-dark", name: "Dark Theme", icon: "dark_mode" }]
+const themes = [
+    {
+        class: "theme-light",
+        name: "Light Theme",
+        icon: "light_mode",
+        canvas: {
+            bg: "#eee",
+            text: "black",
+            key_border: "black",
+            key_shadow: "#ccc",
+            key_fill: "white",
+        }
+    },
+    {
+        class: "theme-dark",
+        name: "Dark Theme",
+        icon: "dark_mode",
+        canvas:
+        {
+            bg: "#181a1b",
+            text: "white",
+            key_border: "#666",
+            key_shadow: "#222",
+            key_fill: "#111",
+        }
+    }]
 
 const KEYNames = {
     "moveLeft": { shortName: "L", fullName: "Left", },
@@ -383,7 +408,7 @@ function resizeCanvas(data, keyData, { controllerKeys }) {
     canvas.getContext("2d").scale(dpr, dpr);
 
     const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#eee"
+    ctx.fillStyle = currentTheme.canvas.bg;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 
@@ -875,6 +900,7 @@ function setTheme() {
     body.classList.toggle(currentTheme.class);
     themeButtonIcon.innerText = currentTheme.icon;
     themeButtonText.innerText = currentTheme.name;
+    rerender();
 }
 
 themeButton.addEventListener("click", () => {

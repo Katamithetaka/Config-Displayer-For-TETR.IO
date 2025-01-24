@@ -15,22 +15,22 @@ export class Key {
      * @param {number} xoffset
      * @param {number} yoffset 
      */
-    draw(ctx, xoffset, yoffset) {
-        ctx.strokeStyle = "black"
-        ctx.fillStyle = "#cccccc"
+    draw(ctx, xoffset, yoffset, stroke, fill, shadow, text) {
+        ctx.strokeStyle = stroke
+        ctx.fillStyle = shadow
         ctx.beginPath()
         ctx.roundRect(xoffset + this.x, yoffset + this.y, this.width, this.height, 5);
         ctx.fill()
         ctx.stroke()
 
         ctx.beginPath()
-        ctx.fillStyle = "white"
+        ctx.fillStyle = fill
         ctx.roundRect(xoffset + this.x + 6, yoffset + this.y + 4, this.width - 12, this.height - 14, 5);
         ctx.fill()
 
         const fontSize = 12;
         ctx.beginPath()
-        ctx.fillStyle = "black"
+        ctx.fillStyle = text
         ctx.font = "normal " + fontSize + "px serif"
         ctx.fillText(this.topText,    xoffset + this.x + 9, yoffset + this.y + 14);
         ctx.fillText(this.middleText, xoffset + this.x + 9, yoffset + this.y + 14 + fontSize);
@@ -57,7 +57,7 @@ export class Key {
 
         const fontSize = 16;
         ctx.beginPath()
-        ctx.fillStyle = "black"
+        ctx.fillStyle = color
         ctx.font = "bold " + fontSize + "px serif"
         const textWidth = ctx.measureText(text).width;
         ctx.fillText(text,    xoffset + this.x + this.width / 2 - textWidth / 2, yoffset + this.y + this.height / 2);
