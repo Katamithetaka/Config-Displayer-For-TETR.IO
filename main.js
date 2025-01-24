@@ -91,7 +91,8 @@ const themes = [
             key_border: "black",
             key_shadow: "#ccc",
             key_fill: "white",
-        }
+        },
+        controller: "controller.png"
     },
     {
         class: "theme-dark",
@@ -104,7 +105,9 @@ const themes = [
             key_border: "#666",
             key_shadow: "#222",
             key_fill: "#111",
-        }
+        },
+        controller: "controller_white.png"
+
     }]
 
 const KEYNames = {
@@ -486,6 +489,7 @@ function renderController(ctx, keyboardWidth, margin, controllerKeys) {
     console.log(controllerKeys.entries())
     const { width, height, canvasWidth, canvasHeight, x: controllerX } = getControllerData();
     img.onload = function () {
+        img.style = "--line-color: red;"
         ctx.drawImage(img, controllerX, keyboardWidth + margin, width, height);
         for (const [input, keys] of controllerKeys.entries()) {
             let key = keys.map(c => c.fullName).join(", ");
@@ -540,12 +544,14 @@ function renderController(ctx, keyboardWidth, margin, controllerKeys) {
                 console.log(metrics.width)
             }
             let y = inputPos.y + keyboardWidth + margin
-            ctx.fillStyle = "black"
+            const theme = currentTheme.canvas;
+
+            ctx.fillStyle = theme.text
             ctx.fillText(key, x, y);
         }
 
     }
-    img.src = "controller.svg"
+    img.src = currentTheme.controller
 }
 
 function renderKeyboard(ctx, keyData, keyboardKeys) {
@@ -585,8 +591,10 @@ function highlight3(ctx, color1, color2, color3, text, key, keyData) {
 
 function renderKeyText(ctx, text, key, keyData)
 {
+    const theme = currentTheme.canvas;
+
     let fontSize = 16;
-    ctx.fillStyle = "black"
+    ctx.fillStyle = theme.text;
     ctx.font = "bold " + fontSize + "px sans-serif"
     ctx.textAlign = "center";
 
@@ -632,9 +640,9 @@ function render({ ctx }, keys, keyData, { keyboardKeys, controllerKeys }) {
 
 
 
-
+    const theme = currentTheme.canvas;
     for (const key of keys) {
-        key.draw(ctx, keyData.keyboardMargin, keyData.keyboardMargin);
+        key.draw(ctx, keyData.keyboardMargin, keyData.keyboardMargin, theme.key_border, theme.key_fill, theme.key_shadow, theme.text);
     }
 
     if(keyboardKeys.size)
