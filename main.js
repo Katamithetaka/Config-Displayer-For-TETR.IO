@@ -6,6 +6,8 @@ const dropArea = document.getElementById("dropArea")
 const exportButton = document.getElementById("exportButton");
 const copyButton = document.getElementById("copyButton");
 
+const canvasContainer = document.getElementById("canvasContainer");
+
 const fileInput = { input: document.getElementById("configFile"), value: null }
 /**
  * @type {HTMLInputElement}
@@ -81,29 +83,83 @@ const body = document.body;
 const themes = [{ class: "theme-light", name: "Light Theme", icon: "light_mode" }, { class: "theme-dark", name: "Dark Theme", icon: "dark_mode" }]
 
 const KEYNames = {
-    "moveLeft": "L",
-    "moveRight": "R",
-    "softDrop": "SD",
-    "hardDrop": "HD",
-    "rotateCCW": "CCW",
-    "rotateCW": "CW",
-    "rotate180": "180",
-    "hold": "H",
-    "exit": "EX",
-    "retry": "R",
-    "chat": "CHAT",
-    "target1": "T1",
-    "target2": "T2",
-    "target3": "T3",
-    "target4": "T4",
-    "menuUp": "MU",
-    "menuDown": "MD",
-    "menuLeft": "ML",
-    "menuRight": "MR",
-    "menuBack": "MB",
-    "menuConfirm": "MOK",
-    "openSocial": "OS"
+    "moveLeft": { shortName: "L", fullName: "Left", },
+    "moveRight": { shortName: "R", fullName: "Right", },
+    "softDrop": { shortName: "SD", fullName: "Soft Drop", },
+    "hardDrop": { shortName: "HD", fullName: "Hard Drop", },
+    "rotateCCW": { shortName: "CCW", fullName: "Rotate Counter Clockwise", },
+    "rotateCW": { shortName: "CW", fullName: "Rotate Clockwise", },
+    "rotate180": { shortName: "180", fullName: "Rotate 180°", },
+    "hold": { shortName: "H", fullName: "Hold", },
+    "exit": { shortName: "EX", fullName: "Exit", },
+    "retry": { shortName: "R", fullName: "Retry", },
+    "chat": { shortName: "CHAT", fullName: "Chat", },
+    "target1": { shortName: "T1", fullName: "Target 1", },
+    "target2": { shortName: "T2", fullName: "Target 2", },
+    "target3": { shortName: "T3", fullName: "Target 3", },
+    "target4": { shortName: "T4", fullName: "Target 4", },
+    "menuUp": { shortName: "MU", fullName: "Menu Up", },
+    "menuDown": { shortName: "MD", fullName: "Menu Down", },
+    "menuLeft": { shortName: "ML", fullName: "Menu Left", },
+    "menuRight": { shortName: "MR", fullName: "Menu Right", },
+    "menuBack": { shortName: "MB", fullName: "Menu Back", },
+    "menuConfirm": { shortName: "MOK", fullName: "Menu Confirm", },
+    "openSocial": { shortName: "OS", fullName: "Open Social" }
 }
+
+const KEYFullNames = {
+    "moveLeft": "Left",
+    "moveRight": "Right",
+    "softDrop": "Soft Drop",
+    "hardDrop": "Hard Drop",
+    "rotateCCW": "Rotate Counter Clockwise",
+    "rotateCW": "Rotate Clockwise",
+    "rotate180": "Rotate 180°",
+    "hold": "Hold",
+    "exit": "Exit",
+    "retry": "Retry",
+    "chat": "Chat",
+    "target1": "Target 1",
+    "target2": "Target 2",
+    "target3": "Target 3",
+    "target4": "Target 4",
+    "menuUp": "Menu Up",
+    "menuDown": "Menu Down",
+    "menuLeft": "Meny Left",
+    "menuRight": "Menu Right",
+    "menuBack": "Menu Back",
+    "menuConfirm": "Menu Confirm",
+    "openSocial": "Open Social"
+}
+
+const SwitchControllerKeyNames = {
+    "AXIS_1_NEG": "LJOY_UP",
+    "AXIS_1_POS": "LJOY_DOWN",
+    "AXIS_0_NEG": "LJOY_LEFT",
+    "AXIS_0_POS": "LJOY_RIGHT",
+    "BUTTON_0": "BTN_SOUTH",
+    "BUTTON_1": "BTN_EAST",
+    "BUTTON_2": "BTN_WEST",
+    "BUTTON_3": "BTN_NORTH",
+    "BUTTON_4": "BTN_L1",
+    "BUTTON_5": "BTN_R1",
+    "BUTTON_6": "BTN_L2",
+    "BUTTON_7": "BTN_R2",
+    "BUTTON_8": "BTN_SELECT",
+    "BUTTON_9": "BTN_START",
+    "BUTTON_10": "BTN_L3",
+    "BUTTON_11": "BTN_R3",
+    "BUTTON_12": "DPAD_UP",
+    "BUTTON_13": "DPAD_DOWN",
+    "BUTTON_14": "DPAD_LEFT",
+    "BUTTON_15": "DPAD_RIGHT",
+
+    "AXIS_3_NEG": "RJOY_UP",
+    "AXIS_3_POS": "RJOY_DOWN",
+    "AXIS_2_NEG": "RJOY_LEFT",
+    "AXIS_2_POS": "RJOY_RIGHT"
+}
+
 
 const WASDDefaultControls = {
     moveLeft: ["KEYA", "NUMPAD4"],
@@ -202,7 +258,7 @@ const nextThemeGenerator = (function* nextThemeGeneratorFunction() {
     }
 })()
 let currentTheme = nextThemeGenerator.next().value;
-let nextTheme = nextThemeGenerator.next().value 
+let nextTheme = nextThemeGenerator.next().value
 
 
 
@@ -218,7 +274,7 @@ function fileError(message, ctx) {
     fileInput.value = null;
     canvas.width = 0;
     canvas.height = 0;
-    renderDefaultKeyboard();
+    renderDefault();
 }
 
 async function parseData() {
@@ -290,28 +346,51 @@ async function readLayout() {
     return { keyData, keys };
 }
 
-function resizeCanvas(data, keyData) {
+function getControllerData() {
+    return { width: 1041, canvasWidth: 770 + 441, height: 383, x: 130 }
+}
 
-    let count = 0, handlingSize = 0;
+function resizeCanvas(data, keyData, { controllerKeys }) {
+
+    let count = 0, handlingSize = 0, controller = !!controllerKeys.size;
     const fontsize = 14;
-
     if (data) {
         count = Object.values(data["handling"]).filter(c => c !== false).length;
         handlingSize = (fontsize + 2) * (count + 1) * (enableHandlingSettingsInput.checked == false ? 0 : 1);
     }
 
-    canvas.width = keyData.keyboardWidth * keyData.width + keyData.keyboardMargin * 2;
-    canvas.height = handlingSize + keyData.keyboardHeight * keyData.height + keyData.keyboardMargin * 2;
+    if (controller) {
+        canvasContainer.classList.remove("center")
+        canvasContainer.classList.add("left")
+    }
+    else {
+        canvasContainer.classList.remove("left")
+        canvasContainer.classList.add("center")
+    }
+
+    const { height, canvasWidth, x } = getControllerData();
+
+
+    const w = Math.max(x + controller * (canvasWidth), keyData.keyboardWidth * keyData.width + keyData.keyboardMargin * 2);
+    const h = handlingSize + keyData.keyboardHeight * keyData.height + keyData.keyboardMargin * 2 + controller * height + keyData.keyboardMargin * 2;
+
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + "px";
+    canvas.style.height = h + "px";
+    canvas.style.imageRendering = "pixelated"
+    canvas.getContext("2d").scale(dpr, dpr);
 
     const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#eeeeee"
+    ctx.fillStyle = "#eee"
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 
     return { count, handlingSize, fontsize, ctx }
 }
 
-function renderKeyboard({ ctx }, keys, keyData, controls) {
+function getKeys(keys, keyData, controls) {
 
     const shownKeys = [];
     if (enableGameControlsInput.checked) {
@@ -327,15 +406,9 @@ function renderKeyboard({ ctx }, keys, keyData, controls) {
     }
 
     const shownKeysSet = new Set(shownKeys.flat());
-    const indexColor = {
-        0: makeColor(primaryControlColorInput, primaryControlOpacityInput),
-        1: makeColor(secondaryControlColorInput, secondaryControlOpacityInput),
-        2: makeColor(tertiaryControlColorInput, tertiaryControlOpacityInput)
-    }
 
-    for (const key of keys) {
-        key.draw(ctx, keyData.keyboardMargin, keyData.keyboardMargin);
-    }
+    const parsedKeys = new Map
+    const controllerKeys = new Map;
 
     for (const control in controls) {
         if (!shownKeysSet.has(control)) {
@@ -352,24 +425,208 @@ function renderKeyboard({ ctx }, keys, keyData, controls) {
                 console.error("Couldn't find button for value " + control + "( value was: " + button + " )");
                 continue;
             }
-            const index = keyData.mapping[button.toLowerCase()]
-            if (index === undefined || index === null) continue;
+            if (button in SwitchControllerKeyNames) {
+                const name = SwitchControllerKeyNames[button];
+                const k = controllerKeys.has(name) ? controllerKeys.get(name) : [];
+                k.push({ ...keyName, index: i });
+                controllerKeys.set(name, k);
+            }
+            else {
+                const index = keyData.mapping[button.toLowerCase()]
+                if (index === undefined || index === null) continue;
+                const key = keys[index];
 
-            const key = keys[index];
-
-            key.highlight(ctx, keyName, indexColor[i] ?? indexColor[2], "black", keyData.keyboardMargin, keyData.keyboardMargin);
+                const k = parsedKeys.has(key) ? parsedKeys.get(key) : [];
+                k.push({ ...keyName, index: i });
+                parsedKeys.set(key, k);
+            }
         }
+    }
+
+    return {
+        keyboardKeys: parsedKeys,
+        controllerKeys,
     }
 }
 
-async function renderDefaultKeyboard() {
+/**
+ * 
+ * @param {CanvasRenderingContext2D} ctx 
+ * @param {number} keyboardWidth 
+ * @param {number} margin 
+ * @param {Map<string, typeof KEYNames["moveLeft"] & {index: number}[]> } controllerKeys 
+ */
+function renderController(ctx, keyboardWidth, margin, controllerKeys) {
+    var img = new Image();
+    console.log(controllerKeys.entries())
+    const { width, height, canvasWidth, canvasHeight, x: controllerX } = getControllerData();
+    img.onload = function () {
+        ctx.drawImage(img, controllerX, keyboardWidth + margin, width, height);
+        for (const [input, keys] of controllerKeys.entries()) {
+            let key = keys.map(c => c.fullName).join(", ");
+            const controllerLeftOffset = 100;
+            const controllerRightOffset = 700;
+            console.log(key, input)
+
+            const textAlign = {
+                left: Symbol("left"),
+                right: Symbol("right"),
+            }
+            const inputMap = {
+                "LJOY_UP": { x: controllerX + controllerLeftOffset, y: 3 + 141.25, textAlign: textAlign.right },
+                "LJOY_DOWN": { x: controllerX + controllerLeftOffset, y: 3 + 178.75, textAlign: textAlign.right },
+                "LJOY_LEFT": { x: controllerX + controllerLeftOffset, y: 3 + 160, textAlign: textAlign.right },
+                "LJOY_RIGHT": { x: controllerX + controllerLeftOffset, y: 3 + 197.5, textAlign: textAlign.right },
+                "RJOY_UP": { x: controllerRightOffset + controllerX + controllerLeftOffset, y: 3 + 219.25, textAlign: textAlign.left },
+                "RJOY_DOWN": { x: controllerRightOffset + controllerX + controllerLeftOffset, y: 3 + 256.75, textAlign: textAlign.left },
+                "RJOY_LEFT": { x: controllerRightOffset + controllerX + controllerLeftOffset, y: 3 + 275.5, textAlign: textAlign.left },
+                "RJOY_RIGHT": { x: controllerRightOffset + controllerX + controllerLeftOffset, y: 3 + 238, textAlign: textAlign.left },
+                "BTN_NORTH": { x: controllerRightOffset + controllerX + controllerLeftOffset, y: 3 + 141.25, textAlign: textAlign.left },
+                "BTN_SOUTH": { x: controllerRightOffset + controllerX + controllerLeftOffset, y: 3 + 178.75, textAlign: textAlign.left },
+                "BTN_WEST": { x: controllerRightOffset + controllerX + controllerLeftOffset, y: 3 + 197.5, textAlign: textAlign.left },
+                "BTN_EAST": { x: controllerRightOffset + controllerX + controllerLeftOffset, y: 3 + 160, textAlign: textAlign.left },
+                "BTN_L1": { x: controllerX + controllerLeftOffset, y: 3 + 68, textAlign: textAlign.right },
+                "BTN_R1": { x: controllerRightOffset + controllerX + controllerLeftOffset, y: 3 + 68, textAlign: textAlign.left },
+                "BTN_L2": { x: controllerX + controllerLeftOffset, y: 3 + 25, textAlign: textAlign.right },
+                "BTN_R2": { x: controllerRightOffset + controllerX + controllerLeftOffset, y: 3 + 25, textAlign: textAlign.left },
+                "BTN_SELECT": { x: controllerX + controllerLeftOffset, y: 3 + 122, textAlign: textAlign.right },
+                "BTN_START": { x: controllerRightOffset + controllerX + controllerLeftOffset, y: 3 + 122, textAlign: textAlign.left },
+                "DPAD_UP": { x: controllerX + controllerLeftOffset, y: 3 + 219.25, textAlign: textAlign.right },
+                "DPAD_DOWN": { x: controllerX + controllerLeftOffset, y: 3 + 256.75, textAlign: textAlign.right },
+                "DPAD_LEFT": { x: controllerX + controllerLeftOffset, y: 3 + 238, textAlign: textAlign.right },
+                "DPAD_RIGHT": { x: controllerX + controllerLeftOffset, y: 3 + 275.5, textAlign: textAlign.right },
+            }
+
+            ctx.font = "bold 14px 'Bitstream Vera Sans Mono'"
+            const metrics = ctx.measureText(key);
+            const inputPos = inputMap[input];
+            console.log(input)
+
+            if (!inputMap[input]) {
+                continue;
+            }
+            let x = 0;
+            const textOffset = 5;
+            if (inputMap[input].textAlign == textAlign.left) {
+                x = inputPos.x + textOffset;
+            }
+            else {
+                x = inputPos.x - metrics.width - textOffset;
+                console.log(metrics.width)
+            }
+            let y = inputPos.y + keyboardWidth + margin
+            ctx.fillStyle = "black"
+            ctx.fillText(key, x, y);
+        }
+
+    }
+    img.src = "controller.svg"
+}
+
+function renderKeyboard(ctx, keyData, keyboardKeys) {
+    const indexColor = {
+        0: makeColor(primaryControlColorInput, primaryControlOpacityInput),
+        1: makeColor(secondaryControlColorInput, secondaryControlOpacityInput),
+        2: makeColor(tertiaryControlColorInput, tertiaryControlOpacityInput),
+        3: makeColor(tertiaryControlColorInput, tertiaryControlOpacityInput)
+
+    }
+
+    for (const [key, keys] of keyboardKeys.entries()) {
+        const text = keys.map(x => x.shortName).join("\n");
+        if(keys.length == 3) {
+            highlight3(ctx, indexColor[keys[0].index], indexColor[keys[1].index], indexColor[keys[2].index], text, key, keyData);
+        }
+        else if(keys.length == 2) {
+            highlight2(ctx, indexColor[keys[0].index], indexColor[keys[1].index], text, key, keyData);
+        }
+        else if(keys.length == 1) {
+            highlight1(ctx, indexColor[keys[0].index], text, key, keyData);
+        }
+    }
+
+}
+
+function highlight3(ctx, color1, color2, color3, text, key, keyData) {
+    ctx.fillStyle = color1
+    ctx.fillRect(keyData.keyboardMargin, keyData.keyboardMargin, keyData.keyboardWidth, keyData.keyboardHeight);
+    ctx.fillStyle = color2
+    ctx.fillRect(keyData.keyboardMargin + keyData.keyboardWidth, keyData.keyboardMargin, keyData.keyboardWidth, keyData.keyboardHeight);
+    ctx.fillStyle = color3
+    ctx.fillRect(keyData.keyboardMargin + keyData.keyboardWidth * 2, keyData.keyboardMargin, keyData.keyboardWidth, keyData.keyboardHeight);
+
+    renderKeyText(ctx, text, key, keyData);
+}
+
+function renderKeyText(ctx, text, key, keyData)
+{
+    let fontSize = 16;
+    ctx.fillStyle = "black"
+    ctx.font = "bold " + fontSize + "px sans-serif"
+    ctx.textAlign = "center";
+
+
+    ctx.fillText(text, keyData.keyboardMargin + key.x + key.width / 2, keyData.keyboardMargin + key.y + key.height / 2, key.width - 10);
+    ctx.textAlign = "left";
+
+}
+
+function highlight2(ctx, color1, color2, text, key, keyData) {
+
+    ctx.fillStyle = color1
+
+    ctx.beginPath()
+    ctx.roundRect(keyData.keyboardMargin + key.x, keyData.keyboardMargin + key.y, key.width, key.height, 5);
+    ctx.fill()
+
+    ctx.fillStyle = color2
+
+    ctx.beginPath()
+    ctx.roundRect(keyData.keyboardMargin + key.x + 6, keyData.keyboardMargin + key.y + 4, key.width - 12, key.height - 14, 5);
+    ctx.fill()
+
+
+    renderKeyText(ctx, text, key, keyData);
+
+
+}
+
+function highlight1(ctx, color, text, key, keyData) {
+    ctx.fillStyle = color
+    console.log(color)
+    ctx.beginPath()
+    ctx.roundRect(keyData.keyboardMargin + key.x, keyData.keyboardMargin + key.y, key.width, key.height, 5);
+    ctx.fill()
+
+    renderKeyText(ctx, text, key, keyData);
+
+}
+
+
+function render({ ctx }, keys, keyData, { keyboardKeys, controllerKeys }) {
+
+
+
+
+    for (const key of keys) {
+        key.draw(ctx, keyData.keyboardMargin, keyData.keyboardMargin);
+    }
+
+    if(keyboardKeys.size)
+        renderKeyboard(ctx, keyData, keyboardKeys);
+    if(controllerKeys.size)
+        renderController(ctx, keyData.keyboardHeight * keyData.height + keyData.keyboardMargin * 2, keyData.keyboardMargin * 2, controllerKeys);
+}
+
+async function renderDefault() {
 
     try {
         const layout = await readLayout();
         const { keys, keyData } = layout;
-        const canvasData = resizeCanvas(null, keyData);
 
-        renderKeyboard(canvasData, keys, keyData, guidelineDefaultControls);
+        const parsedKeys = getKeys(keys, keyData, guidelineDefaultControls)
+        const canvasData = resizeCanvas(null, keyData, parsedKeys);
+        render(canvasData, keys, keyData, parsedKeys);
     }
     catch (e) {
         alert("An error occured while trying to render they keyboard!");
@@ -410,10 +667,10 @@ function renderHandling({ ctx, count, handlingSize, fontsize }, keyData, data) {
     ctx.font = "bold " + fontsize + "px sans-serif"
     let offset = count;
 
-    ctx.fillText("ARR: " + data["handling"]["arr"] + "F", keyData.keyboardMargin, canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
-    ctx.fillText("DAS: " + data["handling"]["das"] + "F", keyData.keyboardMargin, canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
-    ctx.fillText("DCD: " + data["handling"]["dcd"] + "F", keyData.keyboardMargin, canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
-    ctx.fillText("SDF: " + data["handling"]["sdf"] + "X", keyData.keyboardMargin, canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
+    ctx.fillText("ARR: " + data["handling"]["arr"] + "F", keyData.keyboardMargin , canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
+    ctx.fillText("DAS: " + data["handling"]["das"] + "F", keyData.keyboardMargin , canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
+    ctx.fillText("DCD: " + data["handling"]["dcd"] + "F", keyData.keyboardMargin , canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
+    ctx.fillText("SDF: " + data["handling"]["sdf"] + "X", keyData.keyboardMargin , canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
 
     if (data["handling"]["safelock"]) {
         ctx.fillText("Prevent accidental missdrop", keyData.keyboardMargin, canvas.height - keyData.keyboardMargin - (fontsize + 2) * (--offset))
@@ -441,7 +698,7 @@ async function rerender() {
         }
 
         if (!data) {
-            renderDefaultKeyboard();
+            renderDefault();
             return;
         }
 
@@ -459,11 +716,13 @@ async function rerender() {
             return;
         }
 
-        const canvasData = resizeCanvas(data, keyData);
+        const parsedKeys = getKeys(keys, keyData, controls)
+        console.log(parsedKeys)
+        const canvasData = resizeCanvas(data, keyData, parsedKeys);
 
         if (!canvasData) return;
 
-        renderKeyboard(canvasData, keys, keyData, controls);
+        render(canvasData, keys, keyData, parsedKeys);
         renderHandling(canvasData, keyData, data);
 
     }
@@ -591,11 +850,11 @@ exportButton.addEventListener("click", () => {
 })
 
 copyButton.addEventListener("click", () => {
-    // canvas.toBlob(function(blob) { 
-    //     const item = new ClipboardItem({ "image/png": blob });
-    //     navigator.clipboard.write([item]); 
-    // });
-
+    canvas.toBlob(function(blob) { 
+        const item = new ClipboardItem({ "image/png": blob });
+        navigator.clipboard.write([item]); 
+    });
+    
     const img = document.createElement('img');
     img.src = canvas.toDataURL();
 
@@ -609,7 +868,7 @@ copyButton.addEventListener("click", () => {
     document.body.removeChild(div);
 })
 
-renderDefaultKeyboard();
+renderDefault();
 
 
 function setTheme() {
@@ -622,13 +881,13 @@ themeButton.addEventListener("click", () => {
 
     // Update base styles
     body.classList.toggle(currentTheme.class);
-    
+
     currentTheme = nextTheme;
-    
+
     setTheme();
 
     nextTheme = nextThemeGenerator.next().value;
-    
+
 
 });
 

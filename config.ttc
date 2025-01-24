@@ -1,0 +1,194 @@
+{
+    "controls": {
+        "style": "custom",
+        "custom": {
+            "moveLeft": [
+                "KEYJ",
+                "AXIS_1_NEG"
+            ],
+            "moveRight": [
+                "KEYL",
+                "AXIS_1_POS"
+            ],
+            "softDrop": [
+                "KEYK",
+                "AXIS_0_NEG"
+            ],
+            "hardDrop": [
+                "SPACE",
+                "AXIS_0_POS"
+            ],
+            "rotateCCW": [
+                "KEYW",
+                "BUTTON_12"
+            ],
+            "rotateCW": [
+                "KEYI",
+                "BUTTON_13"
+            ],
+            "rotate180": [
+                "CONTROLLEFT",
+                "BUTTON_14"
+            ],
+            "hold": [
+                "SHIFTLEFT",
+                "BUTTON_15"
+            ],
+            "exit": [
+                "ESCAPE",
+                "BUTTON_4"
+            ],
+            "retry": [
+                "KEYR",
+                "BUTTON_6"
+            ],
+            "chat": [
+                "ENTER",
+                "BUTTON_7"
+            ],
+            "target1": [
+                "DIGIT1",
+                "BUTTON_5"
+            ],
+            "target2": [
+                "DIGIT2",
+                "BUTTON_8"
+            ],
+            "target3": [
+                "DIGIT3",
+                "BUTTON_9"
+            ],
+            "target4": [
+                "DIGIT4",
+                "BUTTON_3"
+            ],
+            "menuUp": [
+                "",
+                "BUTTON_1"
+            ],
+            "menuDown": [
+                "",
+                "BUTTON_0"
+            ],
+            "menuLeft": [
+                "",
+                "BUTTON_2"
+            ],
+            "menuRight": [
+                "",
+                "AXIS_3_NEG"
+            ],
+            "menuBack": [
+                "",
+                "AXIS_2_NEG"
+            ],
+            "menuConfirm": [
+                "",
+                "AXIS_3_POS"
+            ],
+            "openSocial": [
+                "TAB",
+                "AXIS_2_POS"
+            ]
+        },
+        "sensitivity": 0.5,
+        "vibration": 1
+    },
+    "handling": {
+        "arr": 0,
+        "das": 6.5,
+        "dcd": 0,
+        "sdf": 40,
+        "safelock": true,
+        "cancel": false,
+        "ihs": "tap",
+        "irs": "tap"
+    },
+    "volume": {
+        "disable": false,
+        "music": 0,
+        "sfx": 0.2,
+        "stereo": 0.5,
+        "others": true,
+        "attacks": true,
+        "next": false,
+        "noreset": true,
+        "oof": true,
+        "scrollable": true,
+        "bgmtweak": {}
+    },
+    "video": {
+        "graphics": "medium",
+        "caching": "medium",
+        "actiontext": "all",
+        "particles": 0.6,
+        "background": 0.3,
+        "bounciness": "0",
+        "shakiness": "0",
+        "gridopacity": 0.1,
+        "boardopacity": 0.85,
+        "shadowopacity": 0.15,
+        "zoom": 1,
+        "alwaystiny": false,
+        "nosuperlobbyanim": false,
+        "colorshadow": false,
+        "sidebyside": true,
+        "spin": true,
+        "chatfilter": true,
+        "background_url": null,
+        "background_usecustom": null,
+        "nochat": false,
+        "hideroomids": false,
+        "emotes": true,
+        "emotes_anim": true,
+        "siren": true,
+        "powersave": false,
+        "invert": false,
+        "nobg": false,
+        "chatbg": true,
+        "replaytoolsnocollapse": false,
+        "kos": true,
+        "fire": true,
+        "focuswarning": true,
+        "hidenetwork": false,
+        "guide": false,
+        "lowrescounters": false,
+        "desktopnotifications": true,
+        "lowres": false,
+        "webgl": "webgl2",
+        "bloom": 1,
+        "chroma": 0.5,
+        "flashwave": 1,
+        "grinch": true,
+        "nosnowcaps": true,
+        "menusnowamt": "0"
+    },
+    "gameoptions": {
+        "pro_40l": true,
+        "pro_40l_alert": false,
+        "pro_40l_retry": false,
+        "stride_40l": false,
+        "pro_blitz": false,
+        "pro_blitz_alert": false,
+        "pro_blitz_retry": false,
+        "stride_blitz": false
+    },
+    "electron": {
+        "loginskip": "always",
+        "frameratelimit": "2x",
+        "presence": true,
+        "taskbarflash": true,
+        "anglecompat": false,
+        "adblock": false
+    },
+    "notifications": {
+        "suppress": false,
+        "forcesound": true,
+        "online": "ingame",
+        "offline": "off",
+        "dm": "both",
+        "dm_pending": "both",
+        "invite": "both",
+        "other": "both"
+    }
+}
